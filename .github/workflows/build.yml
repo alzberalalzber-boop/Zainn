@@ -1,58 +1,15 @@
 name: Zain Ultimate Build
-
-on:
-  push:
-    branches: [ main, master ]
-  workflow_dispatch:
-
+on: [push, workflow_dispatch]
 jobs:
   build:
-    runs-on: ubuntu-22.04
-
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - name: Build with Buildozer
+        uses: ArtemSBulgakov/buildozer-action@v1
         with:
-          python-version: '3.9'
-
-      - name: Install System Dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
-
-      - name: Install Python Tools
-        run: |
-          pip install --upgrade pip
-          pip install cython==0.29.33 virtualenv buildozer
-
-      - name: Download and Install Android NDK (25b)
-        run: |
-          wget https://dl.google.com/android/repository/android-ndk-r25b-linux.zip
-          unzip -q android-ndk-r25b-linux.zip -d $HOME
-          rm android-ndk-r25b-linux.zip
-          echo "ANDROID_NDK_HOME=$HOME/android-ndk-r25b" >> $GITHUB_ENV
-
-      - name: Download and Install Android SDK Build Tools (30.0.3)
-        run: |
-          wget https://dl.google.com/android/repository/build-tools_r30.0.3-linux.zip
-          unzip -q build-tools_r30.0.3-linux.zip -d $HOME/android-sdk/build-tools
-          rm build-tools_r30.0.3-linux.zip
-          echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
-          echo "PATH=$PATH:$HOME/android-sdk/build-tools/30.0.3" >> $GITHUB_ENV
-
-      - name: Build APK with Buildozer
-        run: |
-          export ANDROID_HOME=$HOME/android-sdk
-          export ANDROID_NDK_HOME=$HOME/android-ndk-r25b
-          export PATH=$PATH:$ANDROID_HOME/build-tools/30.0.3
-          buildozer -v android debug
-        env:
-          ACCEPT_SDK_LICENSE: "yes"
-
-      - name: Upload APK Artifact
+          command: buildozer android debug
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: Zain-App-Package
