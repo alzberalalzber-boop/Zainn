@@ -7,54 +7,14 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
-
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - name: Build with Buildozer
+        uses: ArtemSBulgakov/buildozer-action@v1
         with:
-          python-version: '3.9'
-
-      - name: Setup Java JDK
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'zulu'
-          java-version: '17'
-
-      - name: Install System Build Tools
-        run: |
-          sudo apt update
-          sudo apt install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
-
-      - name: Install Python Tools
-        run: |
-          pip install --upgrade pip
-          pip install cython==0.29.33 virtualenv buildozer
-
-      - name: Install Android SDK and Build Tools
-        run: |
-          wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
-          unzip commandlinetools-linux-9477386_latest.zip -d $HOME/android-sdk
-          rm commandlinetools-linux-9477386_latest.zip
-          export ANDROID_HOME=$HOME/android-sdk
-          export PATH=$PATH:$ANDROID_HOME/cmdline-tools/bin
-          yes | $ANDROID_HOME/cmdline-tools/bin/sdkmanager --licenses > /dev/null 2>&1
-          $ANDROID_HOME/cmdline-tools/bin/sdkmanager "build-tools;30.0.3" "platforms;android-30" > /dev/null
-          $ANDROID_HOME/cmdline-tools/bin/sdkmanager "ndk;25.1.8937393" > /dev/null
-
-      - name: Build APK with Buildozer
-        run: |
-          export ANDROID_HOME=$HOME/android-sdk
-          export PATH=$PATH:$ANDROID_HOME/cmdline-tools/bin
-          buildozer init
-          buildozer -v android debug
-        env:
-          ACCEPT_SDK_LICENSE: "yes"
-
-      - name: Upload APK Artifact
+          command: buildozer android debug
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: Zain-App-Package
