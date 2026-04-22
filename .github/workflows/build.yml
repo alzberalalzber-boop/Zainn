@@ -1,26 +1,47 @@
-name: Build Ghost APK
-on: [push]
+name: Zain Ultimate Build
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
+
     steps:
-      - name: Checkout
+      - name: Checkout Repository
         uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
-      - name: Install dependencies
+          python-version: '3.10'
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Install System Build Tools
         run: |
-          sudo apt update
-          sudo apt install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev
-          pip install --upgrade cython==0.29.33 virtualenv
-          pip install buildozer
-      - name: Build APK
+          sudo apt-get update
+          sudo apt-get install -y autoconf automake libtool pkg-config build-essential libffi-dev libssl-dev m4
+
+      - name: Install Python Tools
         run: |
-          buildozer -v android debug
-      - name: Upload APK
+          pip install --upgrade pip
+          pip install buildozer Cython==0.29.33 virtualenv
+
+      - name: Build Android APK
+        run: |
+          yes | buildozer --verbose android debug
+        env:
+          ACCEPT_SDK_LICENSE: "yes"
+
+      - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Ghost-App-Package
+          name: Zain-App-Package
           path: bin/*.apk
