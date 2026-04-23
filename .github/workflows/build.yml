@@ -20,13 +20,14 @@ jobs:
 
       - name: Install Android Build Tools (fix for aidl)
         run: |
-          sudo apt-get update
-          sudo apt-get install -y wget unzip
+          # Create SDK directory in home (writable)
+          mkdir -p $HOME/android-sdk/build-tools
+          cd $HOME
           wget https://dl.google.com/android/repository/build-tools_r30.0.3-linux.zip
-          mkdir -p /usr/local/android-sdk/build-tools
-          unzip build-tools_r30.0.3-linux.zip -d /usr/local/android-sdk/build-tools
-          echo "$PATH:/usr/local/android-sdk/build-tools/30.0.3" >> $GITHUB_PATH
-          echo "ANDROID_HOME=/usr/local/android-sdk" >> $GITHUB_ENV
+          unzip -q build-tools_r30.0.3-linux.zip -d $HOME/android-sdk/build-tools
+          rm build-tools_r30.0.3-linux.zip
+          echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
+          echo "$HOME/android-sdk/build-tools/30.0.3" >> $GITHUB_PATH
 
       - name: Build APK
         run: buildozer -v android debug
