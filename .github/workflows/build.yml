@@ -1,36 +1,18 @@
-name: Build APK
+name: Build APK with Docker
 on: [push, workflow_dispatch]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      image: kivy/buildozer-ci
 
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.9'
-
-      - name: Install buildozer
-        run: |
-          pip install --upgrade pip
-          pip install buildozer cython
-
-      - name: Install Android Build Tools (fix for aidl)
-        run: |
-          # Create SDK directory in home (writable)
-          mkdir -p $HOME/android-sdk/build-tools
-          cd $HOME
-          wget https://dl.google.com/android/repository/build-tools_r30.0.3-linux.zip
-          unzip -q build-tools_r30.0.3-linux.zip -d $HOME/android-sdk/build-tools
-          rm build-tools_r30.0.3-linux.zip
-          echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
-          echo "$HOME/android-sdk/build-tools/30.0.3" >> $GITHUB_PATH
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Build APK
-        run: buildozer -v android debug
+        run: yes | buildozer android debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
