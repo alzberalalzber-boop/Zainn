@@ -15,7 +15,6 @@ android.ndk = 25b
 android.archs = arm64-v8a
 android.copy_libs = 0
 android.skip_update = True
-android.build_tools = 30.0.3
 android.add_aidl = False
 icon.filename = zain_logo.png
 presplash.filename = zain_logo.png
