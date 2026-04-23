@@ -1,11 +1,11 @@
-name: Build APK with Docker
+name: Build APK with Kivy Docker
 on: [push, workflow_dispatch]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: kivy/buildozer-ci
+      image: kivy/buildozer
 
     steps:
       - name: Checkout
