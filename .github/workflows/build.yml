@@ -1,17 +1,44 @@
-name: Build APK
+name: Build APK with SDK
+
 on: [push, workflow_dispatch]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
+
     steps:
       - uses: actions/checkout@v4
-      - name: Install buildozer
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+
+      - name: Install buildozer and cython
         run: |
           pip install --upgrade pip
           pip install buildozer cython
+
+      - name: Install Android SDK and Build Tools
+        run: |
+          mkdir -p /home/runner/.buildozer/android/platform/android-sdk
+          cd /home/runner/.buildozer/android/platform
+          wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
+          unzip -q commandlinetools-linux-9477386_latest.zip
+          rm commandlinetools-linux-9477386_latest.zip
+          export ANDROID_HOME=$PWD/android-sdk
+          export PATH=$PATH:$PWD/cmdline-tools/bin
+          yes | $PWD/cmdline-tools/bin/sdkmanager --licenses > /dev/null 2>&1
+          $PWD/cmdline-tools/bin/sdkmanager "build-tools;30.0.3" "platforms;android-30" "ndk;25.1.8937393"
+          mkdir -p $ANDROID_HOME/build-tools
+          mv cmdline-tools $ANDROID_HOME/cmdline-tools
+          echo "ANDROID_HOME=$ANDROID_HOME" >> $GITHUB_ENV
+          echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> $GITHUB_PATH
+          echo "$ANDROID_HOME/build-tools/30.0.3" >> $GITHUB_PATH
+
       - name: Build APK
         run: buildozer -v android debug
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
