@@ -1,31 +1,69 @@
 [app]
-# (1) Version Fix
-title = Ghost C2
-package.name = ghostc2
-package.domain = org.ghostc2
+
+# (str) Title of your application
+title = Zain Tools
+
+# (str) Package name
+package.name = zaintools
+
+# (str) Package domain (needed for android packaging)
+package.domain = com.zain
+
+# (str) Source code where the main.py live
 source.dir = .
+
+# (list) Source files to include (let empty to include all the files)
 source.include_exts = py,png,jpg,kv,atlas,json
-version = 0.1
 
-# (2) Dependencies Fix - Using pycryptodomex for stability
-requirements = python3,kivy==2.3.0,requests,pycryptodomex,android,certifi
+# (str) Application versioning (method 1)
+version = 1.0.0
 
+# (list) Application requirements
+requirements = python3,kivy,requests
+
+# (str) Supported orientation (portrait, landscape or all)
 orientation = portrait
-android.permissions = INTERNET, READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE
 
-# (3) Android SDK/NDK Fix for 2026 standards
-android.api = 33
+# (bool) Indicate if the application should be fullscreen or not
+fullscreen = 0
+
+# (list) Permissions
+android.permissions = INTERNET, WRITE_EXTERNAL_STORAGE
+
+# (int) Target Android API, should be as high as possible.
+android.api = 30
+
+# (int) Minimum API your APK will support.
 android.minapi = 21
-android.sdk_api = 33
-android.ndk = 25b
-android.ndk_api = 21
 
-# (4) Build Architecture
+# (str) Android NDK version to use
+android.ndk = 25b
+
+# (str) Android architecture to build for
 android.archs = arm64-v8a
-android.private_storage = True
+
+# (bool) If True, then try to skip updating the Android SDK (helps with aidl errors)
+android.skip_update = True
+
+# (bool) Automatically accept SDK license
 android.accept_sdk_license = True
-android.skip_update = False
+
+# (bool) Disable aidl requirement (avoids "Aidl not found" error)
+android.add_aidl = False
+
+# (bool) Copy libs to APK (set to 0 to reduce size)
+android.copy_libs = 0
+
+# (str) Path to custom icon (optional, remove if not used)
+icon.filename = zain_logo.png
+
+# (str) Path to custom splash screen image (optional)
+presplash.filename = zain_logo.png
 
 [buildozer]
+
+# (int) Log level (0 = error only, 1 = info, 2 = debug (with command output))
 log_level = 2
+
+# (int) Display warning if buildozer is run as root (0 = off, 1 = on)
 warn_on_root = 1
